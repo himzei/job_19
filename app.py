@@ -1,4 +1,5 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
+from scrapper import search_incruit
 
 app = Flask(__name__)
 
@@ -8,7 +9,9 @@ def home():
 
 @app.route("/search")
 def search(): 
-    return render_template("search.html")
+    keyword = request.args.get("keyword")
+    jobs = search_incruit()
+    return render_template("search.html", keyword=keyword, jobs=jobs)
 
 if __name__ == '__main__':
     app.run(debug=True)
