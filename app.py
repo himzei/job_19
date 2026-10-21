@@ -11,7 +11,7 @@ def home():
 def search(): 
     keyword = request.args.get("keyword")
     jobs = search_incruit(keyword)
-    return render_template("search.html", keyword=keyword, jobs=enumerate(jobs))
+    return render_template("search.html", keyword=keyword, jobs=list(enumerate(jobs)))
 
 if __name__ == '__main__':
     app.run(debug=True)

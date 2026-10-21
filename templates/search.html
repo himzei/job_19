@@ -1,29 +1,265 @@
-<html>
-    <head></head>
-    <body>
-        <h1>{{ keyword }} 잡서치결과 페이지입니다.</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>순번</th>
-                    <th>회사명</th>
-                    <th>공고제목</th>
-                    <th>회사위치</th>
-                    <th>상세보기</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for index, job in jobs %}
-                <tr>
-                    <td>{{ index + 1 }}</td>
-                    <td>{{ job["company"] }}</td>
-                    <td>{{ job["title"] }}</td>
-                    <td>{{ job["location"] }}</td>
-                    <td>{{ job["link"] }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{{ keyword }} 검색결과 - 잡스크래퍼</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+        <style>
+            * { box-sizing: border-box; margin: 0; padding: 0; }
+            :root {
+                --primary: #1f5bff;
+                --primary-dark: #1446d6;
+                --text: #222;
+                --sub: #777;
+                --line: #e5e8ef;
+                --bg: #f4f6fa;
+            }
+            body {
+                font-family: "Pretendard", -apple-system, "Malgun Gothic", sans-serif;
+                color: var(--text);
+                background: var(--bg);
+            }
+            a { color: inherit; text-decoration: none; }
+            .inner {
+                max-width: 1100px;
+                margin: 0 auto;
+                padding: 0 20px;
+            }
 
+            /* 상단 헤더 + 검색창 */
+            .header {
+                background: #fff;
+                border-bottom: 2px solid var(--primary);
+            }
+            .header .inner {
+                height: 80px;
+                display: flex;
+                align-items: center;
+                gap: 32px;
+            }
+            .logo {
+                font-size: 24px;
+                font-weight: 800;
+                color: var(--primary);
+                letter-spacing: -0.5px;
+                white-space: nowrap;
+            }
+            .logo span { color: var(--text); }
+            .search-form {
+                flex: 1;
+                max-width: 560px;
+                display: flex;
+                border: 2px solid var(--primary);
+                border-radius: 30px;
+                overflow: hidden;
+            }
+            .search-form input {
+                flex: 1;
+                border: none;
+                outline: none;
+                font-size: 16px;
+                padding: 0 20px;
+                font-family: inherit;
+                min-width: 0;
+            }
+            .search-form button {
+                border: none;
+                background: var(--primary);
+                color: #fff;
+                font-size: 15px;
+                font-weight: 700;
+                padding: 12px 26px;
+                cursor: pointer;
+                font-family: inherit;
+            }
+            .search-form button:hover { background: var(--primary-dark); }
+
+            /* 결과 요약 */
+            .summary {
+                padding: 32px 0 16px;
+                display: flex;
+                align-items: flex-end;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .summary h1 {
+                font-size: 22px;
+                font-weight: 700;
+            }
+            .summary h1 strong { color: var(--primary); }
+            .summary .count {
+                font-size: 15px;
+                color: var(--sub);
+            }
+            .summary .count b { color: var(--primary); }
+
+            /* 공고 리스트 */
+            .job-list {
+                list-style: none;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-top: 2px solid var(--text);
+                margin-bottom: 60px;
+            }
+            .job-item {
+                display: grid;
+                grid-template-columns: 50px 200px 1fr 140px;
+                align-items: center;
+                gap: 20px;
+                padding: 22px 24px;
+                border-bottom: 1px solid var(--line);
+                transition: background 0.15s;
+            }
+            .job-item:last-child { border-bottom: none; }
+            .job-item:hover { background: #f8faff; }
+            .job-item .num {
+                font-size: 14px;
+                color: var(--sub);
+                text-align: center;
+            }
+            .job-item .company {
+                font-size: 15px;
+                font-weight: 600;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .job-item .title {
+                display: block;
+                font-size: 17px;
+                font-weight: 600;
+                margin-bottom: 8px;
+                line-height: 1.4;
+            }
+            .job-item .title:hover {
+                color: var(--primary);
+                text-decoration: underline;
+            }
+            .job-item .meta {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            .tag {
+                font-size: 13px;
+                color: #555;
+                background: var(--bg);
+                padding: 4px 10px;
+                border-radius: 4px;
+            }
+            .btn-detail {
+                justify-self: end;
+                font-size: 14px;
+                font-weight: 600;
+                color: var(--primary);
+                border: 1px solid var(--primary);
+                padding: 10px 18px;
+                border-radius: 4px;
+                white-space: nowrap;
+                transition: all 0.15s;
+            }
+            .btn-detail:hover {
+                background: var(--primary);
+                color: #fff;
+            }
+
+            .empty {
+                background: #fff;
+                border: 1px solid var(--line);
+                text-align: center;
+                padding: 80px 20px;
+                margin-bottom: 60px;
+                color: var(--sub);
+            }
+            .empty strong {
+                display: block;
+                font-size: 20px;
+                color: var(--text);
+                margin-bottom: 8px;
+            }
+            .empty a {
+                display: inline-block;
+                margin-top: 20px;
+                color: var(--primary);
+                font-weight: 600;
+            }
+
+            .footer {
+                text-align: center;
+                font-size: 13px;
+                color: var(--sub);
+                padding: 24px;
+                background: #fff;
+                border-top: 1px solid var(--line);
+            }
+
+            @media (max-width: 768px) {
+                .header .inner {
+                    height: auto;
+                    flex-direction: column;
+                    align-items: stretch;
+                    gap: 12px;
+                    padding-top: 16px;
+                    padding-bottom: 16px;
+                }
+                .search-form { max-width: none; }
+                .job-item {
+                    grid-template-columns: 1fr;
+                    gap: 8px;
+                    padding: 18px 16px;
+                }
+                .job-item .num { display: none; }
+                .btn-detail { justify-self: start; margin-top: 6px; }
+            }
+        </style>
+    </head>
+    <body>
+        <header class="header">
+            <div class="inner">
+                <a href="/" class="logo">Job<span>Scrapper</span></a>
+                <form action="/search" class="search-form">
+                    <input type="text" name="keyword" value="{{ keyword }}" placeholder="직무, 기술, 회사명을 입력하세요" required />
+                    <button>검색</button>
+                </form>
+            </div>
+        </header>
+
+        <main class="inner">
+            <div class="summary">
+                <h1>'<strong>{{ keyword }}</strong>' 채용정보 검색결과</h1>
+                <p class="count">총 <b>{{ jobs | length }}</b>건</p>
+            </div>
+
+            {% if jobs %}
+            <ul class="job-list">
+                {% for index, job in jobs %}
+                <li class="job-item">
+                    <div class="num">{{ index + 1 }}</div>
+                    <div class="company">{{ job["company"] }}</div>
+                    <div class="info">
+                        <a href="{{ job['link'] }}" target="_blank" rel="noopener" class="title">{{ job["title"] }}</a>
+                        <div class="meta">
+                            <span class="tag">📍 {{ job["location"] }}</span>
+                        </div>
+                    </div>
+                    <a href="{{ job['link'] }}" target="_blank" rel="noopener" class="btn-detail">상세보기 →</a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div class="empty">
+                <strong>검색 결과가 없습니다.</strong>
+                다른 키워드로 다시 검색해 보세요.
+                <br />
+                <a href="/">← 처음으로</a>
+            </div>
+            {% endif %}
+        </main>
+
+        <footer class="footer">
+            &copy; JobScrapper. 채용정보 출처: 인크루트
+        </footer>
     </body>
 </html>

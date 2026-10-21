@@ -1,12 +1,186 @@
-<html>
-    <head></head>
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>잡스크래퍼</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+        <style>
+            * { box-sizing: border-box; margin: 0; padding: 0; }
+            :root {
+                --primary: #1f5bff;
+                --primary-dark: #1446d6;
+                --text: #222;
+                --sub: #777;
+                --line: #e5e8ef;
+                --bg: #f4f6fa;
+            }
+            body {
+                font-family: "Pretendard", -apple-system, "Malgun Gothic", sans-serif;
+                color: var(--text);
+                background: var(--bg);
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+            a { color: inherit; text-decoration: none; }
+
+            /* 상단 헤더 */
+            .header {
+                background: #fff;
+                border-bottom: 1px solid var(--line);
+            }
+            .header .inner {
+                max-width: 1100px;
+                margin: 0 auto;
+                padding: 0 20px;
+                height: 64px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .logo {
+                font-size: 24px;
+                font-weight: 800;
+                color: var(--primary);
+                letter-spacing: -0.5px;
+            }
+            .logo span { color: var(--text); }
+            .nav a {
+                margin-left: 24px;
+                font-size: 15px;
+                color: var(--sub);
+            }
+            .nav a:hover { color: var(--primary); }
+
+            /* 메인 검색 영역 */
+            .hero {
+                flex: 1;
+                background: linear-gradient(135deg, #1f5bff 0%, #4a7dff 60%, #6f9bff 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 80px 20px;
+            }
+            .hero .box {
+                width: 100%;
+                max-width: 720px;
+                text-align: center;
+                color: #fff;
+            }
+            .hero h1 {
+                font-size: 40px;
+                font-weight: 800;
+                letter-spacing: -1px;
+                margin-bottom: 12px;
+            }
+            .hero p {
+                font-size: 17px;
+                opacity: 0.9;
+                margin-bottom: 36px;
+            }
+            .search-form {
+                display: flex;
+                background: #fff;
+                border-radius: 50px;
+                padding: 6px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            }
+            .search-form input {
+                flex: 1;
+                border: none;
+                outline: none;
+                font-size: 18px;
+                padding: 0 24px;
+                font-family: inherit;
+                min-width: 0;
+            }
+            .search-form button {
+                border: none;
+                background: var(--primary);
+                color: #fff;
+                font-size: 17px;
+                font-weight: 700;
+                padding: 16px 36px;
+                border-radius: 50px;
+                cursor: pointer;
+                font-family: inherit;
+                transition: background 0.2s;
+            }
+            .search-form button:hover { background: var(--primary-dark); }
+
+            .keywords {
+                margin-top: 24px;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 8px;
+            }
+            .keywords span {
+                font-size: 14px;
+                opacity: 0.85;
+                margin-right: 4px;
+                line-height: 32px;
+            }
+            .keywords a {
+                font-size: 14px;
+                padding: 6px 16px;
+                border: 1px solid rgba(255, 255, 255, 0.5);
+                border-radius: 20px;
+                transition: background 0.2s;
+            }
+            .keywords a:hover { background: rgba(255, 255, 255, 0.2); }
+
+            .footer {
+                text-align: center;
+                font-size: 13px;
+                color: var(--sub);
+                padding: 24px;
+                background: #fff;
+                border-top: 1px solid var(--line);
+            }
+
+            @media (max-width: 600px) {
+                .hero h1 { font-size: 28px; }
+                .search-form input { font-size: 16px; padding: 0 16px; }
+                .search-form button { padding: 14px 22px; font-size: 15px; }
+                .nav { display: none; }
+            }
+        </style>
+    </head>
     <body>
-        <h1>안녕하세요 잡스크래퍼입니다.</h1>
-        <form action="/search">
-            <!-- 안녕하세요 -->
-            <input type="text" name="keyword" /> 
-            <button>검색하기</button>
-        </form>
-        
+        <header class="header">
+            <div class="inner">
+                <a href="/" class="logo">Job<span>Scrapper</span></a>
+                <nav class="nav">
+                    <a href="/">채용정보</a>
+                    <a href="/">기업정보</a>
+                    <a href="/">커리어</a>
+                </nav>
+            </div>
+        </header>
+
+        <section class="hero">
+            <div class="box">
+                <h1>안녕하세요, 잡스크래퍼입니다.</h1>
+                <p>원하는 직무나 기술 키워드로 채용공고를 한 번에 찾아보세요.</p>
+                <form action="/search" class="search-form">
+                    <input type="text" name="keyword" placeholder="직무, 기술, 회사명을 입력하세요 (예: 파이썬)" required autofocus />
+                    <button>검색하기</button>
+                </form>
+                <div class="keywords">
+                    <span>인기 키워드</span>
+                    <a href="/search?keyword=파이썬">파이썬</a>
+                    <a href="/search?keyword=자바">자바</a>
+                    <a href="/search?keyword=리액트">리액트</a>
+                    <a href="/search?keyword=데이터분석">데이터분석</a>
+                    <a href="/search?keyword=AI">AI</a>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            &copy; JobScrapper. 채용정보 출처: 인크루트
+        </footer>
     </body>
 </html>
