@@ -1,11 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 
-keyword = "파이썬"
-pages = 5
-jobs = []
-
-def search_incruit():
+def search_incruit(keyword, pages=1):
+    jobs = []
     for i in range(pages): 
         page = i * 30
         url = f"https://search.incruit.com/list/search.asp?col=job&kw={keyword}&startno={page}"
